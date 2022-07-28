@@ -35,3 +35,13 @@ rem TODO: how to make bootloader not run when production is flashed?
 rem So we should jump to application start flash addr. (0x08040000)
 pause
 ```
+
+This batch script
+* creates .hex file from application's .elf
+* appends CRC at the end
+* creates .hex file from bootloader's .elf
+* merges the 2 hex, and creates a .bin as a result
+* flashes the resulting .bin and resets the STM32 target (which means, STM32 will run IAP bootloader first, that will start application)
+* creates application.zip, so that can be uploaded to fota server (e.g. with [boto3 python library](https://aws.amazon.com/sdk-for-python/)) [TODO]
+
+TODO: we don't want to execute bootloader first, we want to jump to app directly...
