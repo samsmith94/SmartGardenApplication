@@ -48,3 +48,7 @@ TODO: we don't want to execute bootloader first, we want to jump to app directly
 
 [st-flash](https://github.com/stlink-org/stlink/releases/tag/v1.7.0) needs to be downloaded.
 
+
+
+
+## This is the application btw: https://github.com/samsmith94/SmartGardenBootloader
