@@ -45,3 +45,6 @@ This batch script
 * creates application.zip, so that can be uploaded to fota server (e.g. with [boto3 python library](https://aws.amazon.com/sdk-for-python/)) [TODO]
 
 TODO: we don't want to execute bootloader first, we want to jump to app directly...
+
+[st-flash](https://github.com/stlink-org/stlink/releases/tag/v1.7.0) needs to be downloaded.
+
