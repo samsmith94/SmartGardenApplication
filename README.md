@@ -1,3 +1,7 @@
++-- _drafts
+|   +-- begin-with-the-crazy-ideas.textile
+|   +-- on-simplicity-in-technology.markdown
+
 workspace
 |_ SmartGardenApplication
 |_ SmartGardenBootloader
