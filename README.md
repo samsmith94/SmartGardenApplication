@@ -1,16 +1,10 @@
 ```
 +-- _drafts
-|   +-- begin-with-the-crazy-ideas.textile
-|   +-- on-simplicity-in-technology.markdown
+|   +-- SmartGardenApplication
+|   +-- SmartGardenBootloader
+|   +-- production.bat
 ```
-
-```
-workspace
-|_ SmartGardenApplication
-|_ SmartGardenBootloader
-|_ production.bat:
-```
-
+### production.bat:
 ```Cancel changes
 rem Create application.hex and zipped application.bin
 
