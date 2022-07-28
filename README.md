@@ -1,9 +1,8 @@
-.
+```
 +-- _drafts
 |   +-- begin-with-the-crazy-ideas.textile
 |   +-- on-simplicity-in-technology.markdown
-
-
+```
 
 ```Cancel changes
 rem Create application.hex and zipped application.bin
