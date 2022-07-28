@@ -1,13 +1,11 @@
+.
 +-- _drafts
 |   +-- begin-with-the-crazy-ideas.textile
 |   +-- on-simplicity-in-technology.markdown
 
-workspace
-|_ SmartGardenApplication
-|_ SmartGardenBootloader
-|_ production.bat:
 
-```
+
+```Cancel changes
 rem Create application.hex and zipped application.bin
 
 arm-none-eabi-objcopy -O ihex F401_SmartGarden/Debug/F401_SmartGarden.elf ./application.hex
