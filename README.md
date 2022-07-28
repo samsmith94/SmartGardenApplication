@@ -4,6 +4,13 @@
 |   +-- on-simplicity-in-technology.markdown
 ```
 
+```
+workspace
+|_ SmartGardenApplication
+|_ SmartGardenBootloader
+|_ production.bat:
+```
+
 ```Cancel changes
 rem Create application.hex and zipped application.bin
 
