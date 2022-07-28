@@ -1,5 +1,5 @@
 ```
-+-- _drafts
++-- STM32CubeIDE workspace
 |   +-- SmartGardenApplication
 |   +-- SmartGardenBootloader
 |   +-- production.bat
