@@ -1,0 +1,8 @@
+../Core/Src/main.c:73:1:__io_putchar	16	static
+../Core/Src/main.c:88:5:main	40	static
+../Core/Src/main.c:150:6:SystemClock_Config	88	static
+../Core/Src/main.c:194:6:Bmp180_Init	48	static
+../Core/Src/main.c:208:6:Task_Bmp180	144	static
+../Core/Src/main.c:227:6:Task_Blinky	16	static
+../Core/Src/main.c:245:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:262:6:Error_Handler	4	static,ignoring_inline_asm
