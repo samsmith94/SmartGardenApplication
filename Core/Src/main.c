@@ -31,6 +31,7 @@
 #include "stdlib.h"
 #include "string.h"
 
+#include "onewire.h"
 #include "ds18b20.h"
 /* USER CODE END Includes */
 
@@ -52,7 +53,14 @@
 
 /* USER CODE BEGIN PV */
 osThreadId Bmp180Handle;
+osThreadId Ds18b20Handle;
 osThreadId BlinkyHandle;
+
+
+//osMutexDef (MutexIsr);                                     // Mutex name definition
+//osMutexId mutex_id;                                        // Mutex id
+
+
 
 /* USER CODE END PV */
 
@@ -61,8 +69,11 @@ void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 void Bmp180_Init(osPriority Priority);
+void Ds18b20_Init(osPriority Priority);
+
 void Task_Bmp180(void const *argument);
 void Task_Blinky(void const *argument);
+void Task_Ds18b20(void const *argument);
 
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -114,15 +125,37 @@ int main(void)
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
-	printf("Everything is initialized\r\n");
+	DS18B20_Config(DS18B20_Resolution_12bits);// olyan mintha a mutex előtt kellene lennie...
+
+//	DS18B20_Config(DS18B20_Resolution_12bits);//ennek itt kell lennie, mert különben nem működik :D
+	//ha be akarom tenni pl. a Ds18b20_Init()-be akkor már nem jó... lehal a led taszk is...
+	printf("\r\n************** APPLICATION *************\r\n");
+	printf("****************************************\r\n");
+
+	printf("Next version\r\n");
+
+	//mutex_id = osMutexCreate  (osMutex (MutexIsr));
+	// szüksége van a mutexre is... én ezt komolyan nem értem...
+	// nincs amúgy error handlerbe ilyenkor...
+
+	Bmp180_Init(osPriorityNormal);
+
+	//valamiért még nem megy... :(
+	// pedig mutexet is próbáltam
+	// néha az első kiírás után lefagy, de beakasztja a ledvillogtató taszkot is...
+
+	//asszem megvan :D
+	// csak több mneória kellett neki (256)
+	Ds18b20_Init(osPriorityNormal);
 
 	osPriority Task_BlinkyPriority = osPriorityNormal;
 	osThreadDef(myTask_Blinky, Task_Blinky, Task_BlinkyPriority, 0, 128);
 	BlinkyHandle = osThreadCreate(osThread(myTask_Blinky), NULL);
 
-	Bmp180_Init(osPriorityNormal);
-	Ds18b20_Init(osPriorityNormal);
 
+	///!!! BIZONY, BIZONY A TASZKOK MEMÓRIÁJÁT KELLETT ÁLLÍTGATNI, HOGY A MUTEX NÉLKÜL MENJEN....
+	//HÁT EZ SEM MINDIG MEGY...
+	//LEHET HOGY A DS18B20 NEM AZ IGAZI, LEHET NÉHA RESETELNI KÉNE, MERT NÉHA 4095-ÖT ÍR HŐMÉRSÉKLETRE...
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -191,8 +224,42 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+void Ds18b20_Init(osPriority Priority) {
+	osThreadDef(myTask_Ds18b20, Task_Ds18b20, Priority, 0, 512);
+	Ds18b20Handle = osThreadCreate(osThread(myTask_Ds18b20), NULL);
+
+}
+
+void Task_Ds18b20(void const *argument) {
+
+	float temperature;
+	char message[64];
+
+	for (;;) {
+		//osMutexWait    (mutex_id, 0);
+		DS18B20_ReadAll();
+		DS18B20_StartAll();
+		uint8_t ROM_tmp[8];
+		uint8_t i;
+		for (i = 0; i < DS18B20_Quantity(); i++) {
+			if (DS18B20_GetTemperature(i, &temperature)) {
+				DS18B20_GetROM(i, ROM_tmp);
+				memset(message, 0, sizeof(message));
+				sprintf(message, "%d. ROM: %X%X%X%X%X%X%X%X Temp: %f\r\n", i,
+						ROM_tmp[0], ROM_tmp[1], ROM_tmp[2], ROM_tmp[3],
+						ROM_tmp[4], ROM_tmp[5], ROM_tmp[6], ROM_tmp[7],
+						temperature);
+				HAL_UART_Transmit(&huart2, message, strlen(message), 1000);
+				printf("****************************************\r\n");
+			}
+		}
+		//osMutexRelease(mutex_id);
+		osDelay(2000);
+	}
+}
+
 void Bmp180_Init(osPriority Priority) {
-	osThreadDef(myTask_Bmp180, Task_Bmp180, Priority, 0, 128);
+	osThreadDef(myTask_Bmp180, Task_Bmp180, Priority, 0, 512);
 	Bmp180Handle = osThreadCreate(osThread(myTask_Bmp180), NULL);
 
 	//TODO: a hibakezelelést itt még meg kéne oldani, mert ha nincs csatlakoztatva szenzor akkor beragad
@@ -219,8 +286,8 @@ void Task_Bmp180(void const *argument) {
 				(int) temperature / 10, (int) temperature % 10, (int) pressure);
 		HAL_UART_Transmit(&huart2, buffer, strlen(buffer), 1000);
 #endif
-		//printf("Task_Bmp180\r\n");
-		osDelay(3000);
+		printf("****************************************\r\n");
+		osDelay(2000);
 	}
 }
 
@@ -265,6 +332,8 @@ void Error_Handler(void)
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
+		printf("Error_Handler()\r\n");
+		HAL_Delay(500);
 	}
   /* USER CODE END Error_Handler_Debug */
 }
